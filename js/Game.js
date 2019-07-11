@@ -11,13 +11,19 @@ class Game {
 
   startGame() {
     const screenOverlay = document.querySelector("#overlay");
-    screenOverlay.style.display = "none";
-
+    // get a random phrase
     const randomPhrase = this.getRandomPhrase();
+    // set game's active phrase property to a new phrase object with a new random phrase
     this.activePhrase = new Phrase(randomPhrase);
-
+    // add the phrase letter board to the document
     this.activePhrase.addPhraseToDisplay();
+    // add event listerner
+    // remove start screen overlay
+    screenOverlay.style.display = "none";
+    screenOverlay.classList.remove("win");
+    screenOverlay.classList.remove("lose");
   }
+
   getRandomPhrase() {
     const randomNumber = Math.floor(Math.random() * 5);
     return this.phrases[randomNumber];
@@ -25,22 +31,24 @@ class Game {
 
   handleInteraction() {
     // Check to see if the element clicked was a button element
-    const elementClicked = event.target;
-    if (elementClicked.tagName === "BUTTON") {
-      const letter = elementClicked.textContent;
-      // disable the button
-      elementClicked.disabled = true;
-      if (this.activePhrase.checkLetter(letter)) {
+    if (event.target.tagName === "BUTTON") {
+      console.log(event.target);
+      const key = event.target;
+      const guessedLetter = key.textContent;
+      // disable the keyboard button
+      key.disabled = true;
+      if (this.activePhrase.checkLetter(guessedLetter)) {
         // if the user guesses correctly add the "chosen" class
-        elementClicked.classList.add("chosen");
+        key.classList.add("chosen");
         // show the game board letter
-        this.activePhrase.showMatchedLetter(letter);
+        this.activePhrase.showMatchedLetter(guessedLetter);
         // then call the checkForWin() method to see if the player won!
         if (this.checkForWin() === undefined) {
+          this.gameOver();
         }
       } else {
         // if the user does not guess correctly add the "wrong" class
-        elementClicked.classList.add("wrong");
+        key.classList.add("wrong");
         // call removeLife();
         this.removeLife();
       }
@@ -48,27 +56,24 @@ class Game {
   }
 
   removeLife() {
-    // increment the number missed
-    this.missed++;
+    const allHeartImagesNodeList = Array.prototype.slice.call(
+      document.querySelectorAll("#scoreboard ol li")
+    );
+    const allLiveHeartImages = allHeartImagesNodeList
+      .map(heart => {
+        return heart.querySelector("img");
+      })
+      .filter(heart => {
+        return heart.src.includes("liveHeart");
+      });
+
     // switch out the liveHeart with the lostHeart
-    getLastLiveHeart().src = "images/lostHeart.png";
+    const lastLiveHeartImage = allLiveHeartImages.pop();
+    lastLiveHeartImage.src = "images/lostHeart.png";
 
+    this.missed++;
     if (this.missed === 5) {
-      console.log("You lose for good");
-    }
-
-    function getLastLiveHeart() {
-      const allLives = Array.prototype.slice.call(
-        document.querySelectorAll("#scoreboard ol li")
-      );
-      const allLiveHearts = allLives
-        .map(heart => {
-          return heart.querySelector("img");
-        })
-        .filter(heart => {
-          return heart.src.includes("liveHeart");
-        });
-      return allLiveHearts.pop();
+      this.gameOver();
     }
   }
   checkForWin() {
@@ -80,10 +85,34 @@ class Game {
     });
   }
   gameOver() {
-    //TODO
-    // display the original start screen overlay
-    // depending on the outcome of the game
-    //   Update the h1 overlay with a friendly win or lose message
-    // replace the overlay "start" CSS class with either a "win" or "lose" CSS Class
+    const screenOverlay = document.querySelector("#overlay");
+    const gameOverMessage = document.querySelector("#game-over-message");
+    screenOverlay.classList.remove("start");
+
+    if (this.missed === 5) {
+      gameOverMessage.textContent = "You Lost! Better luck next time!";
+      screenOverlay.classList.add("lose");
+    } else {
+      gameOverMessage.textContent = "You Won! You are an expert Hunter!";
+      screenOverlay.classList.add("win");
+    }
+    screenOverlay.style.display = "";
+
+    resetGame();
+    function resetGame() {
+      const letterBoard = document.querySelector("#phrase ul");
+      const keyboardKeys = document.querySelectorAll("#qwerty div button");
+      const heartLives = document.querySelectorAll("#scoreboard ol li");
+      letterBoard.innerHTML = "";
+      keyboardKeys.forEach(key => {
+        key.classList.add("key");
+        key.classList.remove("chosen");
+        key.classList.remove("wrong");
+        key.disabled = false;
+      });
+      heartLives.forEach(heart => {
+        heart.querySelector("img").src = "images/liveHeart.png";
+      });
+    }
   }
 }
