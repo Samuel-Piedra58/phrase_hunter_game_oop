@@ -3,28 +3,32 @@
  * Game.js */
 
 class Game {
-  constructor(phrases) {
+  constructor() {
     this.missed = 0;
-    this.phrases = phrases;
+    this.phrases = [
+      "accessor property",
+      "data property",
+      "object prototype",
+      "inheritance",
+      "prototype chain"
+    ];
     this.activePhrase = null;
   }
 
   startGame() {
     const screenOverlay = document.querySelector("#overlay");
-    // get a random phrase
-    const randomPhrase = this.getRandomPhrase();
-    // set game's active phrase property to a new phrase object with a new random phrase
-    this.activePhrase = new Phrase(randomPhrase);
+    // set game's active phrase property to a new phrase object with a random phrase
+    this.activePhrase = new Phrase(this.getRandomPhrase());
     // add the phrase letter board to the document
     this.activePhrase.addPhraseToDisplay();
-    // add event listerner
+
     // remove start screen overlay
     screenOverlay.style.display = "none";
-    screenOverlay.classList.remove("win");
-    screenOverlay.classList.remove("lose");
+    screenOverlay.classList.remove("win", "lose");
   }
 
   getRandomPhrase() {
+    // returns a random phrase from this.phrases
     const randomNumber = Math.floor(Math.random() * 5);
     return this.phrases[randomNumber];
   }
@@ -32,34 +36,29 @@ class Game {
   handleInteraction() {
     // Check to see if the element clicked was a button element
     if (event.target.tagName === "BUTTON") {
-      console.log(event.target);
       const key = event.target;
-      const guessedLetter = key.textContent;
-      // disable the keyboard button
       key.disabled = true;
-      if (this.activePhrase.checkLetter(guessedLetter)) {
-        // if the user guesses correctly add the "chosen" class
+
+      if (this.activePhrase.checkLetter(key.textContent)) {
+        // if the user guesses correctly add the "chosen" class and show the game board letter
         key.classList.add("chosen");
-        // show the game board letter
-        this.activePhrase.showMatchedLetter(guessedLetter);
-        // then call the checkForWin() method to see if the player won!
-        if (this.checkForWin() === undefined) {
+        this.activePhrase.showMatchedLetter(key.textContent);
+        if (this.checkForWin()) {
           this.gameOver();
         }
       } else {
-        // if the user does not guess correctly add the "wrong" class
+        // if the user does not guess correctly add the "wrong" class and remove a life
         key.classList.add("wrong");
-        // call removeLife();
         this.removeLife();
       }
     }
   }
 
   removeLife() {
-    const allHeartImagesNodeList = Array.prototype.slice.call(
+    const heartImageNodes = Array.from(
       document.querySelectorAll("#scoreboard ol li")
     );
-    const allLiveHeartImages = allHeartImagesNodeList
+    const allLiveHeartImages = heartImageNodes
       .map(heart => {
         return heart.querySelector("img");
       })
@@ -76,18 +75,20 @@ class Game {
       this.gameOver();
     }
   }
+
   checkForWin() {
-    // check to see if the player has revealed all of the letters in the active phrase
+    // returns boolean depending on whether or not the player has revealed the whole game board
     const lettersNodeList = document.querySelectorAll("#phrase ul li");
-    const lettersOnBoard = Array.prototype.slice.call(lettersNodeList);
-    return lettersOnBoard.find(letter => {
+    const lettersOnBoard = Array.from(lettersNodeList);
+    const areLettersOnBoardHidden = lettersOnBoard.find(letter => {
       return letter.classList.contains("hide");
     });
+    return areLettersOnBoardHidden !== undefined ? false : true;
   }
+
   gameOver() {
     const screenOverlay = document.querySelector("#overlay");
     const gameOverMessage = document.querySelector("#game-over-message");
-    screenOverlay.classList.remove("start");
 
     if (this.missed === 5) {
       gameOverMessage.textContent = "You Lost! Better luck next time!";
@@ -96,6 +97,7 @@ class Game {
       gameOverMessage.textContent = "You Won! You are an expert Hunter!";
       screenOverlay.classList.add("win");
     }
+    screenOverlay.classList.remove("start");
     screenOverlay.style.display = "";
 
     resetGame();
