@@ -16,105 +16,118 @@ class Game {
   }
 
   startGame() {
-    const screenOverlay = document.querySelector("#overlay");
-    // set game's active phrase property to a new phrase object with a random phrase
-    this.activePhrase = new Phrase(this.getRandomPhrase());
-    // add the phrase letter board to the document
+    // Begins game by selecting a random phrase and
+    // displaying it to the user and remove start screen overlay
+    const randomPhrase = this.getRandomPhrase();
+    this.activePhrase = new Phrase(randomPhrase);
     this.activePhrase.addPhraseToDisplay();
 
-    // remove start screen overlay
-    screenOverlay.style.display = "none";
-    screenOverlay.classList.remove("win", "lose");
+    const screenOverlay = document.querySelector("#overlay");
+
+    function screenOverlayAnimation() {
+      const classes = ["win", "lose", "start", "fadeOut", "fadeIn", "animated"];
+      screenOverlay.style.display = "none";
+      screenOverlay.classList.remove(...classes);
+      screenOverlay.removeEventListener("animationend", screenOverlayAnimation);
+    }
+
+    // fade's out the screen overlay
+    screenOverlay.addEventListener("animationend", screenOverlayAnimation);
+    screenOverlay.classList.add("fadeOut", "animated");
   }
 
   getRandomPhrase() {
-    // returns a random phrase from this.phrases
+    // returns a lowercase random phrase from this.phrases
     const randomNumber = Math.floor(Math.random() * 5);
-    return this.phrases[randomNumber];
+    return this.phrases[randomNumber].toLowerCase();
   }
 
-  handleInteraction() {
-    // Check to see if the element clicked was a button element
-    if (event.target.tagName === "BUTTON") {
-      const key = event.target;
+  handleInteraction(key) {
+    // handles the user guesses
+    // disables key if not disabled,
+    // checks if letter exists on board and shows letter
+    // if letter existed will check if player won
+    // else will increment this.missed and remove a life
+    if (!key.disabled) {
       key.disabled = true;
+      const guessedLetter = key.textContent;
+      const isLetterOnGameBoard = this.activePhrase.checkLetter(guessedLetter);
 
-      if (this.activePhrase.checkLetter(key.textContent)) {
-        // if the user guesses correctly add the "chosen" class and show the game board letter
+      if (isLetterOnGameBoard) {
         key.classList.add("chosen");
-        this.activePhrase.showMatchedLetter(key.textContent);
+        this.activePhrase.showMatchedLetter(guessedLetter);
         if (this.checkForWin()) {
-          this.gameOver();
+          this.gameOver(true);
         }
       } else {
-        // if the user does not guess correctly add the "wrong" class and remove a life
         key.classList.add("wrong");
         this.removeLife();
+        if (this.missed >= 5) {
+          this.gameOver(false);
+        }
       }
     }
   }
 
   removeLife() {
-    const heartImageNodes = Array.from(
+    // increment this.missed value
+    // Removes a life from the scoreboard
+    this.missed++;
+    const heartNodeList = Array.from(
       document.querySelectorAll("#scoreboard ol li")
     );
-    const allLiveHeartImages = heartImageNodes
-      .map(heart => {
-        return heart.querySelector("img");
-      })
-      .filter(heart => {
-        return heart.src.includes("liveHeart");
-      });
-
-    // switch out the liveHeart with the lostHeart
+    const allLiveHeartImages = heartNodeList
+      .map(heart => heart.querySelector("img"))
+      .filter(heart => heart.src.includes("liveHeart"));
     const lastLiveHeartImage = allLiveHeartImages.pop();
     lastLiveHeartImage.src = "images/lostHeart.png";
-
-    this.missed++;
-    if (this.missed === 5) {
-      this.gameOver();
-    }
   }
 
   checkForWin() {
     // returns boolean depending on whether or not the player has revealed the whole game board
     const lettersNodeList = document.querySelectorAll("#phrase ul li");
     const lettersOnBoard = Array.from(lettersNodeList);
-    const areLettersOnBoardHidden = lettersOnBoard.find(letter => {
+    const foundHiddenLetter = lettersOnBoard.find(letter => {
       return letter.classList.contains("hide");
     });
-    return areLettersOnBoardHidden !== undefined ? false : true;
+    return foundHiddenLetter !== undefined ? false : true;
   }
 
-  gameOver() {
+  gameOver(didPlayerWin) {
+    // Displays the game over message depending on if the user won or lost
     const screenOverlay = document.querySelector("#overlay");
     const gameOverMessage = document.querySelector("#game-over-message");
 
-    if (this.missed === 5) {
-      gameOverMessage.textContent = "You Lost! Better luck next time!";
+    if (!didPlayerWin) {
+      gameOverMessage.textContent =
+        "You're Out of Lives! Better luck next time!";
       screenOverlay.classList.add("lose");
     } else {
-      gameOverMessage.textContent = "You Won! You are an expert Hunter!";
+      gameOverMessage.textContent = "You Won! You're an Expert Hunter!";
       screenOverlay.classList.add("win");
     }
-    screenOverlay.classList.remove("start");
-    screenOverlay.style.display = "";
 
-    resetGame();
-    function resetGame() {
-      const letterBoard = document.querySelector("#phrase ul");
-      const keyboardKeys = document.querySelectorAll("#qwerty div button");
-      const heartLives = document.querySelectorAll("#scoreboard ol li");
-      letterBoard.innerHTML = "";
-      keyboardKeys.forEach(key => {
-        key.classList.add("key");
-        key.classList.remove("chosen");
-        key.classList.remove("wrong");
-        key.disabled = false;
-      });
-      heartLives.forEach(heart => {
-        heart.querySelector("img").src = "images/liveHeart.png";
-      });
-    }
+    // fade's in the screen overlay
+    screenOverlay.style.display = "";
+    screenOverlay.classList.add("fadeIn", "animated");
+
+    // Reset the Gameboard
+    // clear <li> elements on game board
+    const letterBoard = document.querySelector("#phrase ul");
+    letterBoard.innerHTML = "";
+
+    // re-enable keys and add/remove the appropriate clases
+    const keyboardKeys = document.querySelectorAll("#qwerty div button");
+    keyboardKeys.forEach(key => {
+      key.classList.add("key");
+      key.classList.remove("chosen", "wrong");
+      key.disabled = false;
+    });
+
+    // replace the lost heart images with the live heart images
+    const heartLives = document.querySelectorAll("#scoreboard ol li");
+    heartLives.forEach(heart => {
+      heart.querySelector("img").src = "images/liveHeart.png";
+    });
   }
 }

@@ -8,31 +8,35 @@ class Phrase {
   }
 
   addPhraseToDisplay() {
+    // populate the gameboard with this.phrase
     const letters = this.phrase
       .split("")
-      .map(createGameLi)
+      .map(letter => {
+        if (letter === " ") {
+          return `<li class="space"> </li>`;
+        } else {
+          return `<li class="hide letter ${letter}">${letter}</li>`;
+        }
+      })
       .join("");
 
-    const letterBoard = document.querySelector("#phrase ul");
-    letterBoard.innerHTML = letters;
+    const gameBoard = document.querySelector("#phrase ul");
+    gameBoard.innerHTML = letters;
+  }
 
-    function createGameLi(character) {
-      if (character === " ") {
-        return `<li class="space"> </li>`;
-      } else {
-        return `<li class="hide letter ${character}">${character}</li>`;
-      }
-    }
+  checkLetter(guessedLetter) {
+    // returns boolean if phrase includes the guessed letter
+    return this.phrase.includes(guessedLetter);
   }
-  checkLetter(guess) {
-    return this.phrase.includes(guess);
-  }
-  showMatchedLetter(guess) {
-    const lettersOnBoard = document.querySelectorAll("#phrase ul li");
-    lettersOnBoard.forEach(function(letter) {
-      if (letter.classList.contains(guess)) {
+
+  showMatchedLetter(guessedLetter) {
+    //  displays all matching letters to the game board
+    const lettersOnGameBoard = document.querySelectorAll("#phrase ul li");
+    lettersOnGameBoard.forEach(function(letter) {
+      if (letter.classList.contains(guessedLetter)) {
         letter.classList.add("show");
         letter.classList.remove("hide");
+        letter.classList.add("remove-border");
       }
     });
   }
