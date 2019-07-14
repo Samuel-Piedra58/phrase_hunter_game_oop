@@ -30,6 +30,7 @@ keyboard.addEventListener(
 );
 
 window.addEventListener("keypress", function(event) {
+  event.preventDefault();
   let keyPressed = event.charCode;
   const screenOverlay = document.querySelector("#overlay");
   const screenOverlayDisplay = screenOverlay.style.display;

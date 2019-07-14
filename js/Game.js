@@ -25,6 +25,8 @@ class Game {
     const screenOverlay = document.querySelector("#overlay");
 
     function screenOverlayAnimation() {
+      const startGameButton = document.querySelector("#btn__reset");
+      startGameButton.disabled = true;
       const classes = ["win", "lose", "start", "fadeOut", "fadeIn", "animated"];
       screenOverlay.style.display = "none";
       screenOverlay.classList.remove(...classes);
@@ -108,9 +110,9 @@ class Game {
     }
 
     // fade's in the screen overlay
+    screenOverlay.addEventListener("animationend", resetGame);
     screenOverlay.style.display = "";
     screenOverlay.classList.add("fadeIn", "animated");
-    screenOverlay.addEventListener("animationend", resetGame);
 
     function resetGame() {
       // Reset the Gameboard after animation ends
@@ -131,6 +133,7 @@ class Game {
       heartLives.forEach(heart => {
         heart.querySelector("img").src = "images/liveHeart.png";
       });
+      startGameButton.disabled = false;
       screenOverlay.removeEventListener("animationend", resetGame);
     }
   }
