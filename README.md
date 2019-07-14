@@ -8,7 +8,7 @@ A phrase guessing game where the user guess's letters to unveil a random hidden 
 
 ![Phrase Hunter Game Board](https://github.com/Samuel-Piedra58/techdegree-project-04/blob/master/project_imgs/phrase_hunter_game_board.jpg)
 
-### Understand the rules of the game:
+### Understand the rules of the game (courtesy of teamtreehouse):
 
 * The player’s goal is to guess all the letters in a hidden, random phrase. At the beginning, the player only sees the number of letters and words in the phrase, represented by blank boxes on the screen.
 
