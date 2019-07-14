@@ -22,3 +22,4 @@ A phrase guessing game where the user guess's letters to unveil a random hidden 
     
 * The player keeps choosing letters until they reveal all the letters in the phrase, or they make five incorrect guesses.
 
+### Style and Script Changes in Addition to the Basic Requirements:
