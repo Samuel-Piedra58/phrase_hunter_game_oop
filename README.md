@@ -23,3 +23,11 @@ A phrase guessing game where the user guess's letters to unveil a random hidden 
 * The player keeps choosing letters until they reveal all the letters in the phrase, or they make five incorrect guesses.
 
 ### Style and Script Enhancements in Addition to the Basic Requirements:
+
+* When the player selects the "Start Game" button (or chooses to play again) the starting screen overlay will "fade out" of view. This was made posssible by utilizing [Animate.css](https://daneden.github.io/animate.css/) and the "fadeOut" css class.
+
+* After the player either wins or loses the game an alternative "win" or "lose" screen overlay is "faded in" to view. This was made posssible by utilizing [Animate.css](https://daneden.github.io/animate.css/) and the "fadeIn" css class.
+
+* Not only can the player utilize the on-screen keyboard interface to select letters, but they can also use their keyboard to guess any letter!
+
+* Once the player guess's a correct letter a CSS Animation is used to scale the guessed game board letter(s) up and then back down quickly! The player will also see the background color of the game board letter transition from green to blue!
