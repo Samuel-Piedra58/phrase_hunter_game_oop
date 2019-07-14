@@ -110,24 +110,28 @@ class Game {
     // fade's in the screen overlay
     screenOverlay.style.display = "";
     screenOverlay.classList.add("fadeIn", "animated");
+    screenOverlay.addEventListener("animationend", resetGame);
 
-    // Reset the Gameboard
-    // clear <li> elements on game board
-    const letterBoard = document.querySelector("#phrase ul");
-    letterBoard.innerHTML = "";
+    function resetGame() {
+      // Reset the Gameboard after animation ends
+      // clear <li> elements on game board
+      const letterBoard = document.querySelector("#phrase ul");
+      letterBoard.innerHTML = "";
 
-    // re-enable keys and add/remove the appropriate clases
-    const keyboardKeys = document.querySelectorAll("#qwerty div button");
-    keyboardKeys.forEach(key => {
-      key.classList.add("key");
-      key.classList.remove("chosen", "wrong");
-      key.disabled = false;
-    });
+      // re-enable keys and add/remove the appropriate clases
+      const keyboardKeys = document.querySelectorAll("#qwerty div button");
+      keyboardKeys.forEach(key => {
+        key.classList.add("key");
+        key.classList.remove("chosen", "wrong");
+        key.disabled = false;
+      });
 
-    // replace the lost heart images with the live heart images
-    const heartLives = document.querySelectorAll("#scoreboard ol li");
-    heartLives.forEach(heart => {
-      heart.querySelector("img").src = "images/liveHeart.png";
-    });
+      // replace the lost heart images with the live heart images
+      const heartLives = document.querySelectorAll("#scoreboard ol li");
+      heartLives.forEach(heart => {
+        heart.querySelector("img").src = "images/liveHeart.png";
+      });
+      screenOverlay.removeEventListener("animationend", resetGame);
+    }
   }
 }

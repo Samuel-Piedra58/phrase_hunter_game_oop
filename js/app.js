@@ -2,6 +2,10 @@
  * Project 4 - OOP Game App
  * app.js */
 
+// @author: Samuel Piedra
+// @Date Completed: 07/13/2019
+// @github: https://github.com/Samuel-Piedra58
+
 let game;
 const startGameButton = document.querySelector("#btn__reset");
 const keyboard = document.querySelector("#qwerty");
@@ -25,12 +29,6 @@ keyboard.addEventListener(
   false
 );
 
-// TODO:
-//  To get exceeds:
-//    -Experiement with a transition where when the player wins the game the background of the game board "bubbles" with a green colr
-//      if they lose it bubbles with a red color and then the win/lose screen is overlayed
-//    -Add a ui effect for when a key is selected it looks like it is actaully being clicked
-
 window.addEventListener("keypress", function(event) {
   let keyPressed = event.charCode;
   const screenOverlay = document.querySelector("#overlay");
@@ -41,8 +39,12 @@ window.addEventListener("keypress", function(event) {
     keyPressed += 32;
   }
 
-  // Check if keypress charcode is a lowercase letter
-  if (keyPressed >= 97 && keyPressed <= 122 && game !== undefined) {
+  // Check if keypress charCode is a lowercase letter
+  if (
+    keyPressed >= 97 &&
+    keyPressed <= 122 &&
+    screenOverlayDisplay === "none"
+  ) {
     // return the onscreen keyboard button that matches the keypress
     const keys = Array.from(keyboard.querySelectorAll("button"));
     const keyboardButton = keys.find(key => {
