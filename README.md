@@ -2,6 +2,8 @@
 
 This project is part of the Treehouse Full Stack JavaScript Techdegree.
 
+A fun interactive phrase guessing game! The phrases to guess are related to the paradigm of programming deployed in this project, Object-Oriented JavaScript. The game will test your knowledge of principles and terms related to object oriented programming in JavaScript. Programmer Beware!
+
 ## Phrase Hunter
 
 A phrase guessing game where the user guess's letters to unveil a random hidden phrase!
